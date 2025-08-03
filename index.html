@@ -1,4 +1,5 @@
-<!DOCTYPE html>
+
+    <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
@@ -63,6 +64,20 @@
       return true;
     }
 
+    function filterGallery() {
+      const input = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('#galleryGrid > div');
+
+      cards.forEach(card => {
+        const text = card.innerText.toLowerCase();
+        if (text.includes(input)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    }
+
     window.onload = function() {
       showSection('about');
     }
@@ -123,80 +138,46 @@
       </form>
     </div>
 
-    <!-- WhatsApp upload option -->
-    <div class="text-center mb-10">
-      <a href="https://wa.me/233559071280?text=Hello%2C%20please%20upload%20my%20artwork%20manually%20for%20ARTSOC%20Gallery" class="text-blue-600 underline">
-        Or click here to send your artwork via WhatsApp
-      </a>
+    <!-- Search bar -->
+    <div class="mb-6 text-center">
+      <input type="text" id="searchInput" onkeyup="filterGallery()" placeholder="Search artworks..." class="w-full md:w-1/2 px-4 py-2 border rounded shadow">
     </div>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-
-      <!-- Add your artworks here -->
-
+    <div id="galleryGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+      <!-- Artwork 1 -->
       <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-        <img src="11.jpg" alt="Wildlife Harmony" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <img src="11.jpg" alt="Wildlife Relief" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Wildlife Harmony</h3>
         <p class="text-sm text-gray-600">Wood carving featuring elephant, lion, and giraffe. Represents harmony in nature. Found at UEW Art Department.</p>
       </div>
 
+      <!-- Artwork 2 -->
       <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
         <img src="12.jpg" alt="Basketball Relief" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Basketball Action</h3>
         <p class="text-sm text-gray-600">Wood relief depicting intense basketball play. Celebrates youth and energy. Displayed at UEW Art Department.</p>
       </div>
 
+      <!-- Artwork 3 -->
       <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-        <img src="3.jpg" alt="Gold Kente Cloth" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <img src="3.jpg" alt="Traditional Royal Kente" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Traditional Royal Kente</h3>
-        <p class="text-sm text-gray-600">
-          Artist: Freedom Mensah<br>
-          Materials: Cotton thread<br>
-          Technique: Hand-woven on a traditional loom<br>
-          A symbolic Ghanaian Kente cloth design representing royalty and unity.
-        </p>
+        <p class="text-sm text-gray-600">Materials: Cotton thread | Technique: Hand-woven | Location: UEW Art Department</p>
       </div>
 
+      <!-- Artwork 4 -->
       <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-        <img src="4.JPG" alt="Bob Marley Fabric Mosaic" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <img src="4.JPG" alt="Bob Marley Mosaic" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Bob Marley Portrait</h3>
-        <p class="text-sm text-gray-600">
-          Materials: Ankara fabric, glue<br>
-          Technique: Mosaic collage<br>
-          A vibrant and expressive portrait of Bob Marley made using cut fabric pieces arranged on board.
-        </p>
+        <p class="text-sm text-gray-600">Materials: Ankara fabric | Technique: Mosaic collage | A vibrant fabric-based artwork</p>
       </div>
 
+      <!-- Artwork 5 -->
       <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-        <img src="13.JPG" alt="Beaded Bags" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <img src="13.JPG" alt="Beaded Handbags" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Beaded Handbags</h3>
-        <p class="text-sm text-gray-600">
-          Materials: Acrylic beads, fishing line, wood handles<br>
-          Technique: Hand-threading<br>
-          A pair of handmade beaded bags showcasing vibrant color and structure in accessory design.
-        </p>
+        <p class="text-sm text-gray-600">Materials: Acrylic beads | Technique: Hand-threading | Beautiful handmade accessories</p>
       </div>
-
-      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-        <img src="5.JPG" alt="Children Eating Watermelon" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-        <h3 class="text-xl font-bold mb-2">Joyful Moments</h3>
-        <p class="text-sm text-gray-600">
-          Materials: Acrylic on canvas<br>
-          Technique: Layered brushwork with monochrome background<br>
-          A vibrant painting of children sharing watermelon, set against a grayscale neighborhood for contrast and emphasis.
-        </p>
-      </div>
-
-      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
-        <img src="8.JPG" alt="Street Coconut Seller" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-        <h3 class="text-xl font-bold mb-2">Market Hustle</h3>
-        <p class="text-sm text-gray-600">
-          Materials: Mixed media (newspaper collage, acrylic)<br>
-          Technique: Collage and painting<br>
-          A bustling urban market scene creatively built with printed paper and paint to capture the richness of daily life.
-        </p>
-      </div>
-
     </div>
   </section>
 
@@ -210,3 +191,4 @@
   </section>
 </body>
 </html>
+
