@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>ARTSOC GALLERY</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    html { scroll-behavior: smooth; }
+    .fade { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .stroke-white {
+      -webkit-text-stroke: 0.5px white;
+      text-shadow: 0 0 1px white;
+    }
+    .modal {
+      position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.8);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 50;
+    }
+    .modal img {
+      max-width: 90%; max-height: 80vh;
+      border-radius: 10px;
+      box-shadow: 0 0 15px white;
+    }
+  </style>
+  <script>
+    function showSection(id) {
+      const sections = ['about', 'gallery', 'contact'];
+      sections.forEach(section => {
+        const el = document.getElementById(section);
+        if (el) {
+          el.classList.add('hidden');
+          el.classList.remove('fade');
+        }
+      });
+      const target = document.getElementById(id);
+      if (target) {
+        target.classList.remove('hidden');
+        target.classList.add('fade');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function toggleForm() {
+      const form = document.getElementById('uploadForm');
+      form.classList.toggle('hidden');
+    }
+
+    function enlargeImage(src) {
+      const modal = document.createElement('div');
+      modal.classList.add('modal');
+      modal.onclick = () => document.body.removeChild(modal);
+      const img = document.createElement('img');
+      img.src = src;
+      modal.appendChild(img);
+      document.body.appendChild(modal);
+    }
+
+    function showConfirmation() {
+      alert('Thank you, your forms has been received, upload your artwork through artsocgalleryuew.edu.gh@gmail.com');
+      return true;
+    }
+
+    window.onload = function() {
+      showSection('about');
+    }
+  </script>
+</head>
+<body class="bg-gray-100">
+  <nav class="bg-blue-800 text-white p-4 shadow">
+    <div class="container mx-auto flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <img src="2.jfif" alt="Artsoc Logo" class="h-10 w-10 rounded-full">
+        <h1 class="text-2xl font-bold">ARTSOC GALLERY</h1>
+      </div>
+      <ul class="flex space-x-4">
+        <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
+        <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
+        <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
+      </ul>
+    </div>
+  </nav>
+
+  <section id="about" class="p-8 max-w-5xl mx-auto mt-10 bg-cover bg-center text-red-600 fade" style="background-image: url('1.JPG');">
+    <div class="bg-black bg-opacity-60 text-red-600 stroke-white p-8 rounded-lg">
+      <h2 class="text-3xl font-bold mb-4 text-center text-blue-600">About ARTSOC GALLERY</h2>
+      <p class="mb-6">ARTSOC GALLERY is the official art exhibition platform of the Art Education Department, University of Education, Winneba. It highlights the creativity and craftsmanship of students and faculty in the department, connecting academic and public art spaces.</p>
+      <h3 class="text-2xl font-semibold mb-2 text-blue-600">Our Mission</h3>
+      <p class="mb-6">To nurture artistic excellence, promote critical thinking through art, and offer a platform for visual expression within and beyond the academic setting.</p>
+      <h3 class="text-2xl font-semibold mb-2 text-blue-600">Physical & Online Connection</h3>
+      <p class="mb-6">Our online gallery complements the physical space on campus, allowing broader access to explore and appreciate the artworks created by our community.</p>
+      <h3 class="text-2xl font-semibold mb-2 text-blue-600">Looking Ahead</h3>
+      <ul class="list-disc list-inside">
+        <li>Host virtual exhibitions and artist talks</li>
+        <li>Provide QR/barcode access for artworks</li>
+        <li>Engage alumni through remote contributions</li>
+        <li>Collaborate on interdisciplinary projects</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="gallery" class="hidden p-8 max-w-6xl mx-auto mt-10 fade">
+    <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">Gallery</h2>
+
+    <div class="text-center mb-6">
+      <button onclick="toggleForm()" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Add Artwork</button>
+    </div>
+
+    <div id="uploadForm" class="hidden bg-white p-6 rounded shadow-md mb-10">
+      <h3 class="text-2xl font-bold mb-4 text-blue-600">Upload Your Artwork</h3>
+      <form action="https://formspree.io/f/xldllyeb" method="POST" onsubmit="return showConfirmation()">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input type="text" name="name" placeholder="Full Name" class="border p-2 rounded" required>
+          <input type="email" name="email" placeholder="Email Address" class="border p-2 rounded" required>
+          <input type="text" name="index" placeholder="Index Number" class="border p-2 rounded" required>
+          <input type="text" name="level" placeholder="Level (e.g., 100, 200)" class="border p-2 rounded" required>
+          <input type="text" name="title" placeholder="Artwork Title" class="border p-2 rounded" required>
+        </div>
+        <textarea name="description" placeholder="Description" rows="3" class="w-full mt-4 border p-2 rounded"></textarea>
+        <button type="submit" class="mt-4 px-4 py-2 bg-blue-700 text-white rounded hover:bg-blue-800">Submit</button>
+      </form>
+    </div>
+
+    <!-- WhatsApp upload option -->
+    <div class="text-center mb-10">
+      <a href="https://wa.me/233559071280?text=Hello%2C%20please%20upload%20my%20artwork%20manually%20for%20ARTSOC%20Gallery" class="text-blue-600 underline">
+        Or click here to send your artwork via WhatsApp
+      </a>
+    </div>
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+
+      <!-- Add your artworks here -->
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="11.jpg" alt="Wildlife Harmony" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Wildlife Harmony</h3>
+        <p class="text-sm text-gray-600">Wood carving featuring elephant, lion, and giraffe. Represents harmony in nature. Found at UEW Art Department.</p>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="12.jpg" alt="Basketball Relief" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Basketball Action</h3>
+        <p class="text-sm text-gray-600">Wood relief depicting intense basketball play. Celebrates youth and energy. Displayed at UEW Art Department.</p>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="3.jpg" alt="Gold Kente Cloth" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Traditional Royal Kente</h3>
+        <p class="text-sm text-gray-600">
+          Artist: Freedom Mensah<br>
+          Materials: Cotton thread<br>
+          Technique: Hand-woven on a traditional loom<br>
+          A symbolic Ghanaian Kente cloth design representing royalty and unity.
+        </p>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="4.JPG" alt="Bob Marley Fabric Mosaic" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Bob Marley Portrait</h3>
+        <p class="text-sm text-gray-600">
+          Materials: Ankara fabric, glue<br>
+          Technique: Mosaic collage<br>
+          A vibrant and expressive portrait of Bob Marley made using cut fabric pieces arranged on board.
+        </p>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="13.JPG" alt="Beaded Bags" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Beaded Handbags</h3>
+        <p class="text-sm text-gray-600">
+          Materials: Acrylic beads, fishing line, wood handles<br>
+          Technique: Hand-threading<br>
+          A pair of handmade beaded bags showcasing vibrant color and structure in accessory design.
+        </p>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="5.JPG" alt="Children Eating Watermelon" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Joyful Moments</h3>
+        <p class="text-sm text-gray-600">
+          Materials: Acrylic on canvas<br>
+          Technique: Layered brushwork with monochrome background<br>
+          A vibrant painting of children sharing watermelon, set against a grayscale neighborhood for contrast and emphasis.
+        </p>
+      </div>
+
+      <div class="bg-white p-4 rounded shadow hover:shadow-lg transition">
+        <img src="8.JPG" alt="Street Coconut Seller" onclick="enlargeImage(this.src)" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Market Hustle</h3>
+        <p class="text-sm text-gray-600">
+          Materials: Mixed media (newspaper collage, acrylic)<br>
+          Technique: Collage and painting<br>
+          A bustling urban market scene creatively built with printed paper and paint to capture the richness of daily life.
+        </p>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="contact" class="hidden bg-white text-gray-800 p-8 rounded-xl shadow-lg max-w-4xl mx-auto mt-10 mb-10 fade">
+    <h2 class="text-3xl font-bold text-center text-blue-700 mb-4">Contact Us</h2>
+    <p class="text-center mb-4">For inquiries, exhibitions, or to showcase your work, reach out to us.</p>
+    <div class="text-center">
+      <p><strong>Email:</strong> artsocgalleryuew.edu.gh@gmail.com</p>
+      <p><strong>Phone:</strong> +233 55 907 1280</p>
+    </div>
+  </section>
+</body>
+</html>
