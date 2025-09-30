@@ -14,7 +14,26 @@
     .modal img { max-width: 90%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 15px white; }
     .category-button { cursor: pointer; padding: 8px 16px; background-color: #2563eb; color: white; border-radius: 5px; margin: 4px; }
     .category-button:hover { background-color: #1e40af; }
+
+    /* language switcher style (fixed top-right) */
+    .lang-switcher { position: fixed; top: 10px; right: 12px; z-index: 60; display: inline-flex; align-items: center; gap: 6px; }
+    /* make the Google widget less intrusive */
+    .goog-te-gadget-simple { background-color: transparent !important; border: none !important; padding: 0 !important; }
+    .goog-te-gadget .goog-te-combo { margin-left: 6px; border-radius: 4px; }
   </style>
+
+  <!-- Google Translate widget (auto-translate). includedLanguages includes 'ak' (Akan/Twi) as requested) -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({
+        pageLanguage: 'en',
+        includedLanguages: 'en,fr,es,ak',
+        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
+      }, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
   <script>
     function showSection(id) {
       const sections = ['about', 'gallery', 'contact'];
@@ -90,7 +109,7 @@
         <img src="2.jfif" alt="Artsoc Logo" class="h-10 w-10 rounded-full">
         <h1 class="text-2xl font-bold">ARTSOC GALLERY</h1>
       </div>
-      <ul class="flex space-x-4">
+      <ul class="flex space-x-4 items-center">
         <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
         <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
         <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
@@ -98,11 +117,14 @@
     </div>
   </nav>
 
+  <!-- language widget (fixed top-right) -->
+  <div id="google_translate_element" class="lang-switcher" aria-hidden="false"></div>
+
   <!-- About Section -->
   <section id="about" class="p-8 max-w-5xl mx-auto mt-10 bg-cover bg-center fade" style="background-image: url('1.JPG');">
     <div class="bg-black bg-opacity-60 text-white p-8 rounded-lg">
       <h2 class="text-3xl font-bold mb-4 text-center text-blue-400">About ARTSOC GALLERY</h2>
-      <p class="mb-6">ARTSOC GALLERY is the official art exhibition platform of the Art Education Department, University of Education, Winneba. It highlights the creativity and craftsmanship of students and faculty in the Department</p>
+      <p class="mb-6">ARTSOC GALLERY is the official art exhibition platform of the Art Education Department, University of Education, Winneba. It highlights the creativity and craftsmanship of students and faculty in the department, connecting academic and public art spaces.</p>
       <h3 class="text-2xl font-semibold mb-2 text-white">Our Mission</h3>
       <p class="mb-6">To nurture artistic excellence, promote critical thinking through art, and offer a platform for visual expression within and beyond the academic setting.</p>
       <h3 class="text-2xl font-semibold mb-2 text-white">Physical & Online Connection</h3>
@@ -110,6 +132,7 @@
       <h3 class="text-2xl font-semibold mb-2 text-white">Looking Ahead</h3>
       <ul class="list-disc list-inside">
         <li>Host virtual exhibitions and artist talks</li>
+        <li>Provide QR/barcode access for artworks</li>
         <li>Engage alumni through remote contributions</li>
         <li>Collaborate on interdisciplinary projects</li>
       </ul>
@@ -139,41 +162,42 @@
     <!-- WhatsApp Upload Option -->
     <div class="text-center mb-10">
       <a href="https://wa.me/233559071280?text=Hello%2C%20please%20upload%20my%20artwork%20manually%20for%20ARTSOC%20Gallery" class="text-blue-600 underline">
-         click here to send your artwork via WhatsApp
+        Or click here to send your artwork via WhatsApp
       </a>
     </div>
 
     <!-- Artworks -->
-<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-<!-- sculpture -->
-<div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
-  <img src="21.jpg" 
-       alt=" DUALITY OF EXISTENCE " 
-       onclick="enlargeImage('21.jpg', 'Artist:<br>Materials: clay, paint<br>Technique: modeling<br>This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull')" 
-       class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-  <h3 class="text-xl font-bold mb-2"> DUALITY OF EXISTENCE </h3>
-  <p class="text-sm text-gray-600">
-    Artist:<br>
-    Materials:clay paint <br>
-    Technique: modeling<br>
-This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull'  </p>
-</div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
 
-<!-- sculpture -->
-<div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
-  <img src="20.jpg" 
-       alt="guitar sculpture with mask" 
-       onclick="enlargeImage('20.jpg', 'Artist:<br>Materials: guitar body(wood), clay, wood,paint<br>Technique: modeling<br>This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art')" 
-       class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-  <h3 class="text-xl font-bold mb-2"> GUITAR SCULPTURE WITH MASK </h3>
-  <p class="text-sm text-gray-600">
-    Artist:<br>
-    Materials: guitar body(wood), clay, wood, paint <br>
-    Technique: modeling<br>
-    This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art
-  </p>
-</div>
+      <!-- sculpture -->
+      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
+        <img src="21.jpg" 
+             alt=" DUALITY OF EXISTENCE " 
+             onclick="enlargeImage('21.jpg', 'Artist:<br>Materials: clay, paint<br>Technique: modeling<br>This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull')" 
+             class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2"> DUALITY OF EXISTENCE </h3>
+        <p class="text-sm text-gray-600">
+          Artist:<br>
+          Materials:clay paint <br>
+          Technique: modeling<br>
+        This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull
+        </p>
+      </div>
 
+      <!-- sculpture -->
+      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
+        <img src="20.jpg" 
+             alt="guitar sculpture with mask" 
+             onclick="enlargeImage('20.jpg', 'Artist:<br>Materials: guitar body(wood), clay, wood,paint<br>Technique: modeling<br>This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art')" 
+             class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2"> GUITAR SCULPTURE WITH MASK </h3>
+        <p class="text-sm text-gray-600">
+          Artist:<br>
+          Materials: guitar body(wood), clay, wood, paint <br>
+          Technique: modeling<br>
+          This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art
+        </p>
+      </div>
 
       <!-- Sculptures -->
       <div class="gallery-item bg-white p-4 rounded shadow" data-category="sculpture">
@@ -192,36 +216,36 @@ This sculpture presents a thought-provoking representation of the duality of hum
         <img src="7.JPG" alt="Heroic Rider Sculpture" onclick="enlargeImage(this.src, 'Artist: Unknown<br>Materials: Metal, wood<br>Technique: Mixed sculpture<br>Rider on horseback, symbolizing strength and leadership.')" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Heroic Rider Sculpture</h3>
         <p class="text-sm text-gray-600">Artist: Unknown<br>Materials: Metal, wood<br>Technique: Mixed sculpture<br>Symbolizes strength and leadership.</p>
-      </div><!-- sculpture -->
-<div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
-  <img src="19.jpg" 
-       alt="metal bull" 
-     onclick="enlargeImage('19.jpg', 'Artist:<br>Materials: unwanted car parts (metal)<br>Technique: weaving<br>This art piece serves as a sculpture piece and can also be used to decorate both interior and exterior spaces.')" 
-       class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-  <h3 class="text-xl font-bold mb-2">METAL BULL</h3>
-  <p class="text-sm text-gray-600">
-    Artist:<br>
-    Materials: metal<br>
-    Technique: assemblage<br>
-    This art piece serves as a sculpture piece and can also be used to decorate both interior and exterior spaces.
-  </p>
-</div>
+      </div>
 
+      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
+        <img src="19.jpg" 
+             alt="metal bull" 
+             onclick="enlargeImage('19.jpg', 'Artist:<br>Materials: unwanted car parts (metal)<br>Technique: weaving<br>This art piece serves as a sculpture piece and can also be used to decorate both interior and exterior spaces.')" 
+             class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">METAL BULL</h3>
+        <p class="text-sm text-gray-600">
+          Artist:<br>
+          Materials: metal<br>
+          Technique: assemblage<br>
+          This art piece serves as a sculpture piece and can also be used to decorate both interior and exterior spaces.
+        </p>
+      </div>
 
       <!-- Paintings -->
-<div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="paintings">
-  <img src="22.jpg" 
-       alt=" TWIN TIGERS " 
-       onclick="enlargeImage('22.jpg', 'Artist:<br>Materials: straw on canvas<br>Technique: mosaic<br>this rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength ')" 
-       class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-  <h3 class="text-xl font-bold mb-2"> TWIN TIGERS</h3>
-  <p class="text-sm text-gray-600">
-    Artist:<br>
-    Materials: straw on canvas<br>
-    Technique: mosaic<br>
-this rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength '  </p>
-</div>
-
+      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="paintings">
+        <img src="22.jpg" 
+             alt=" TWIN TIGERS " 
+             onclick="enlargeImage('22.jpg', 'Artist:<br>Materials: straw on canvas<br>Technique: mosaic<br>this rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength ')" 
+             class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2"> TWIN TIGERS</h3>
+        <p class="text-sm text-gray-600">
+          Artist:<br>
+          Materials: straw on canvas<br>
+          Technique: mosaic<br>
+        this rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength
+        </p>
+      </div>
 
       <div class="gallery-item bg-white p-4 rounded shadow" data-category="painting">
         <img src="4.JPG" alt="Bob Marley Portrait" onclick="enlargeImage(this.src, 'Materials: Ankara fabric, glue<br>Technique: Mosaic collage<br>A vibrant portrait of Bob Marley made using cut fabric pieces arranged on board.')" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
@@ -246,38 +270,39 @@ this rectangular artwork portrays two tigers resting closely together symbolizin
         <img src="3.jpg" alt="Traditional Royal Kente" onclick="enlargeImage(this.src, 'Artist: Freedom Mensah<br>Materials: Cotton thread<br>Technique: Hand-woven on a traditional loom<br>Symbolic Ghanaian Kente cloth design representing royalty and unity.')" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Traditional Royal Kente</h3>
         <p class="text-sm text-gray-600">Artist: Freedom Mensah<br>Materials: Cotton thread<br>Technique: Hand-woven on a traditional loom<br>Represents royalty and unity.</p>
-      </div><!-- Basketry -->
-<div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="basketry">
-  <img src="16.jpg" 
-       alt="Flower Vase" 
-     onclick="enlargeImage('16.jpg', 'Artist:<br>Materials: rattan, artificial flower<br>Technique: weaving<br>This art piece serves as a flower and can also be used to decorate both interior and exterior spaces.')" 
-       class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-  <h3 class="text-xl font-bold mb-2">FLOWER VASE</h3>
-  <p class="text-sm text-gray-600">
-    Artist:<br>
-    Materials: rattan<br>
-    Technique: weaving<br>
-    This art piece serves as a flower and can also be used to decorate both interior and exterior spaces.
-  </p>
-</div>
+      </div>
 
-<!-- Basketry -->
-<div class="gallery-item bg-white p-4 rounded shadow" data-category="basketry">
-  <img src="15.jpg" alt="Mirror Frame" 
-      onclick="enlargeImage(this.src, 'Artist: Pascom Phidelia<br>Materials: Rattan, beads, mirror<br>Technique: Weaving<br>This art piece serves as a mirror and can also be used to decorate both interior and exterior spaces.')" 
-       class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-  <h3 class="text-xl font-bold mb-2">Mirror Frame</h3>
-  <p class="text-sm text-gray-600">
-    Artist: Pascom Phidelia<br>
-    Materials: Rattan, beads, mirror<br>
-    Technique: Weaving<br>
-    This art piece serves as a mirror and can also be used to decorate both interior and exterior spaces.
-  </p>
-</div>
+      <!-- Basketry -->
+      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="basketry">
+        <img src="16.jpg" 
+             alt="Flower Vase" 
+             onclick="enlargeImage('16.jpg', 'Artist:<br>Materials: rattan, artificial flower<br>Technique: weaving<br>This art piece serves as a flower and can also be used to decorate both interior and exterior spaces.')" 
+             class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">FLOWER VASE</h3>
+        <p class="text-sm text-gray-600">
+          Artist:<br>
+          Materials: rattan<br>
+          Technique: weaving<br>
+          This art piece serves as a flower and can also be used to decorate both interior and exterior spaces.
+        </p>
+      </div>
+
+      <div class="gallery-item bg-white p-4 rounded shadow" data-category="basketry">
+        <img src="15.jpg" alt="Mirror Frame" 
+             onclick="enlargeImage(this.src, 'Artist: Pascom Phidelia<br>Materials: Rattan, beads, mirror<br>Technique: Weaving<br>This art piece serves as a mirror and can also be used to decorate both interior and exterior spaces.')" 
+             class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <h3 class="text-xl font-bold mb-2">Mirror Frame</h3>
+        <p class="text-sm text-gray-600">
+          Artist: Pascom Phidelia<br>
+          Materials: Rattan, beads, mirror<br>
+          Technique: Weaving<br>
+          This art piece serves as a mirror and can also be used to decorate both interior and exterior spaces.
+        </p>
+      </div>
 
       <!-- Jewelry -->
       <div class="gallery-item bg-white p-4 rounded shadow" data-category="jewelry">
-        <img src="13.JPG" alt="Beaded Handbags"onclick="enlargeImage(this.src, 'Materials: Acrylic beads, fishing line, wood handles<br>Technique: Hand-threading<br>Handmade beaded bags with vibrant colors.')" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
+        <img src="13.JPG" alt="Beaded Handbags" onclick="enlargeImage(this.src, 'Materials: Acrylic beads, fishing line, wood handles<br>Technique: Hand-threading<br>Handmade beaded bags with vibrant colors.')" class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">Beaded Handbags</h3>
         <p class="text-sm text-gray-600">Materials: Acrylic beads, fishing line, wood handles<br>Technique: Hand-threading</p>
       </div>
