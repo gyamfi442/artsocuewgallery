@@ -9,6 +9,7 @@
     html { scroll-behavior: smooth; }
     .fade { animation: fadeIn 0.5s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    .stroke-white { -webkit-text-stroke: 0.5px white; text-shadow: 0 0 1px white; }
 
     /* Navbar dropdown */
     .lang-dropdown { position: relative; display: inline-block; }
@@ -24,6 +25,12 @@
     .lang-menu a { display:flex; align-items:center; gap:8px; padding:8px 12px; text-decoration:none; color:#111; }
     .lang-menu a:hover { background:#f1f5f9; }
 
+    /* hide Google top bar & gadget */
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    body { top: 0 !important; }
+    .goog-te-gadget, .goog-te-gadget-icon { display: none !important; }
+    .goog-te-combo { border-radius:4px; padding:4px; }
+
     /* Modal */
     .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .modal img { max-width: 90%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 15px white; }
@@ -31,7 +38,8 @@
     /* Slideshow */
     .slideshow-container {
       max-width: 90%;
-      width: 100%;
+      width: 800px;
+      height: auto;
       aspect-ratio: 16/9;
       position: relative;
       margin: 30px auto;
@@ -68,29 +76,143 @@
     }
     @media (max-width: 768px) { .slideshow-container { aspect-ratio:4/3; } .slide-title{font-size:1rem;} }
     @media (max-width: 480px) { .slideshow-container { aspect-ratio:3/2; } .slide-title{font-size:0.9rem;} }
-
-    /* Category buttons */
-    .category-button { margin: 0 4px; padding: 6px 12px; background:#1d4ed8; color:white; border:none; border-radius:4px; cursor:pointer; }
-    .category-button:hover { background:#2563eb; }
-
-    /* About section responsiveness */
-    #about .bg-black { padding: 1rem; }
-    @media (max-width: 768px) { #about .bg-black { padding: 1.5rem; } }
-    @media (max-width: 480px) { #about .bg-black { padding: 1rem; } }
-
   </style>
+
+  <!-- Google Translate init -->
+  <script type="text/javascript">
+    function googleTranslateElementInit() {
+      new google.translate.TranslateElement({pageLanguage: 'en', includedLanguages: 'en,fr,es,ak', layout: google.translate.TranslateElement.InlineLayout.SIMPLE}, 'google_translate_element');
+    }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+
+  <script>
+    // Language switcher
+    function translateInstant(lang) {
+      const applyLanguage = () => {
+        const combo = document.querySelector('.goog-te-combo');
+        if (!combo) return false;
+        combo.value = lang;
+        combo.dispatchEvent(new Event('change'));
+        return true;
+      };
+      if (applyLanguage()) return;
+      let tries = 0;
+      const interval = setInterval(() => {
+        tries++;
+        if (applyLanguage() || tries > 30) {
+          clearInterval(interval);
+          try {
+            document.cookie = "googtrans=/en/" + lang + ";path=/";
+            window.location.reload();
+          } catch (e) { console.log(e); }
+        }
+      }, 200);
+    }
+
+    function removeGoogleTopBar() {
+      const interval=setInterval(()=>{ 
+        const banner=document.querySelector('.goog-te-banner-frame'); 
+        if(banner){ 
+          try{banner.style.display='none';}catch(e){} 
+          clearInterval(interval); 
+        } 
+      },300); 
+    }
+
+    function toggleLangMenu() { 
+      const menu=document.querySelector('.lang-menu'); 
+      menu.style.display=(menu.style.display==='block')?'none':'block'; 
+    }
+
+    window.addEventListener('click',(e)=>{ 
+      const dropdown=document.querySelector('.lang-dropdown'); 
+      if(!dropdown) return; 
+      if(!dropdown.contains(e.target)){ 
+        const menu=document.querySelector('.lang-menu'); 
+        if(menu) menu.style.display='none'; 
+      }
+    });
+
+    function showSection(id){
+      ['about','gallery','contact'].forEach(section=>{
+        const el=document.getElementById(section); 
+        if(el){el.classList.add('hidden'); el.classList.remove('fade');}
+      }); 
+      const target=document.getElementById(id); 
+      if(target){target.classList.remove('hidden'); target.classList.add('fade'); window.scrollTo({top:0,behavior:'smooth'});}
+    }
+
+    function toggleForm(){document.getElementById('uploadForm').classList.toggle('hidden');}
+
+    function enlargeImage(src, description){
+      const modal=document.createElement('div'); modal.classList.add('modal'); modal.onclick=()=>document.body.removeChild(modal);
+      const container=document.createElement('div'); container.style.display='flex'; container.style.flexDirection='row'; container.style.gap='20px'; container.style.alignItems='center';
+      const img=document.createElement('img'); img.src=src; 
+      const descDiv=document.createElement('div'); descDiv.style.color='white'; descDiv.style.maxWidth='30%'; descDiv.innerHTML=`<p>${description}</p>`;
+      container.appendChild(img); container.appendChild(descDiv); modal.appendChild(container); document.body.appendChild(modal);
+    }
+
+    function showConfirmation(){ alert('Thank you, your forms has been received, upload your artwork through artsocgalleryuew.edu.gh@gmail.com'); return true; }
+
+    function filterGallery(){ 
+      const input=document.getElementById("searchInput").value.toLowerCase(); 
+      const items=document.querySelectorAll(".gallery-item"); 
+      items.forEach(item=>{ 
+        const title=(item.querySelector("h3")?item.querySelector("h3").innerText.toLowerCase():""); 
+        const desc=(item.querySelector("p")?item.querySelector("p").innerText.toLowerCase():""); 
+        item.style.display=(title.includes(input)||desc.includes(input))?"block":"none";
+      });
+    }
+
+    function filterByCategory(category){ 
+      const items=document.querySelectorAll(".gallery-item"); 
+      items.forEach(item=>{ 
+        item.style.display=(category==="all"||item.dataset.category===category)?"block":"none"; 
+      }); 
+    }
+
+    window.addEventListener('load', ()=>{
+      removeGoogleTopBar();
+      showSection('about');
+
+      // Slideshow
+      const slidesData = [
+        {src:'22.jpg', title:'TWIN TIGERS'},
+        {src:'4.JPG', title:'Bob Marley Portrait'},
+        {src:'5.JPG', title:'Joyful Moments'},
+        {src:'8.JPG', title:'Market Hustle'},
+        {src:'3.jpg', title:'Traditional Royal Kente'},
+        {src:'7.JPG', title:'Heroic Rider Sculpture'}
+      ];
+      const container=document.getElementById('slideshow');
+      slidesData.forEach((slide,i)=>{ 
+        const div=document.createElement('div'); div.className='slide'; 
+        if(i===0) div.style.display='flex'; 
+        const img=document.createElement('img'); img.src=slide.src; img.onclick=()=>enlargeImage(slide.src,slide.title); 
+        div.appendChild(img); 
+        const title=document.createElement('div'); title.className='slide-title'; title.innerText=slide.title; div.appendChild(title); 
+        container.appendChild(div); 
+      });
+      let currentSlide=0; 
+      setInterval(()=>{ 
+        const slides=document.querySelectorAll('.slide'); 
+        slides[currentSlide].style.display='none'; 
+        currentSlide=(currentSlide+1)%slides.length; 
+        slides[currentSlide].style.display='flex'; 
+      },5000);
+    });
+  </script>
 </head>
 <body class="bg-gray-100">
-
-  <!-- Navbar -->
   <nav class="bg-blue-800 text-white p-4 shadow">
-    <div class="container mx-auto flex justify-between items-center flex-wrap">
+    <div class="container mx-auto flex justify-between items-center">
       <div class="flex items-center space-x-2">
         <img src="2.jfif" alt="Artsoc Logo" class="h-10 w-10 rounded-full">
         <h1 class="text-2xl font-bold">ARTSOC GALLERY</h1>
       </div>
-      <div class="flex items-center mt-2 md:mt-0">
-        <ul class="flex space-x-4 items-center mr-4 flex-wrap">
+      <div class="flex items-center">
+        <ul class="flex space-x-4 items-center mr-4">
           <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
           <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
           <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
@@ -133,7 +255,7 @@
     </div>
   </section>
 
-  <!-- Gallery Section -->
+   <!-- Gallery Section -->
   <section id="gallery" class="hidden p-8 max-w-6xl mx-auto mt-10 fade">
     <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">Gallery</h2>
     <div class="text-center mb-6">
@@ -298,7 +420,6 @@
         <p class="text-sm text-gray-600">Materials: Acrylic beads, fishing line<br>Technique: Hand-threading</p>
       </div>
     </div>
-  </section>
 
   <!-- Contact Section -->
   <section id="contact" class="hidden bg-white text-gray-800 p-8 rounded-xl shadow-lg max-w-4xl mx-auto mt-10 mb-10 fade">
@@ -309,92 +430,5 @@
       <p><strong>Phone:</strong> +233 55 907 1280</p>
     </div>
   </section>
-
-  <!-- Scripts -->
-  <script type="text/javascript">
-    // Google Translate
-    function googleTranslateElementInit() {
-      new google.translate.TranslateElement({
-        pageLanguage: 'en',
-        includedLanguages: 'en,fr,es,ak',
-        layout: google.translate.TranslateElement.InlineLayout.SIMPLE
-      }, 'google_translate_element');
-    }
-    function translateInstant(targetLang) {
-      const combo = document.querySelector('.goog-te-combo');
-      if(combo){ combo.value = targetLang; combo.dispatchEvent(new Event('change')); }
-      else { let tries=0; const t=setInterval(()=>{ tries++; const combo2=document.querySelector('.goog-te-combo'); if(combo2){ combo2.value=targetLang; combo2.dispatchEvent(new Event('change')); clearInterval(t);} else if(tries>30){ clearInterval(t); }},100);}
-    }
-    window.addEventListener('click', e => { const dropdown = document.querySelector('.lang-dropdown'); if(!dropdown.contains(e.target)){ document.querySelector('.lang-menu').style.display='none'; }});
-    function toggleLangMenu(){ const menu=document.querySelector('.lang-menu'); menu.style.display=(menu.style.display==='block')?'none':'block'; }
-
-    // Section switching
-    function showSection(id){
-      ['about','gallery','contact'].forEach(section=>{
-        const el=document.getElementById(section);
-        if(el){ el.classList.add('hidden'); el.classList.remove('fade'); }
-      });
-      const target=document.getElementById(id);
-      if(target){ target.classList.remove('hidden'); target.classList.add('fade'); window.scrollTo({top:0,behavior:'smooth'});}
-    }
-
-    // Modal
-    function enlargeImage(src,title){
-      const modal=document.createElement('div'); modal.classList.add('modal'); modal.onclick=()=>document.body.removeChild(modal);
-      const img=document.createElement('img'); img.src=src; modal.appendChild(img);
-      document.body.appendChild(modal);
-    }
-
-    // Slideshow
-    const slidesData = [
-      {src:'22.jpg', title:'TWIN TIGERS'},
-      {src:'4.JPG', title:'Bob Marley Portrait'},
-      {src:'5.JPG', title:'Joyful Moments'},
-      {src:'8.JPG', title:'Market Hustle'},
-      {src:'3.jpg', title:'Traditional Royal Kente'},
-      {src:'7.JPG', title:'Heroic Rider Sculpture'}
-    ];
-    window.addEventListener('load', ()=>{
-      const container=document.getElementById('slideshow');
-      slidesData.forEach((slide,i)=>{
-        const div=document.createElement('div'); div.className='slide';
-        if(i===0) div.style.display='flex';
-        const img=document.createElement('img'); img.src=slide.src; img.onclick=()=>enlargeImage(slide.src,slide.title);
-        div.appendChild(img);
-        const title=document.createElement('div'); title.className='slide-title'; title.innerText=slide.title;
-        div.appendChild(title);
-        container.appendChild(div);
-      });
-      let currentSlide=0;
-      setInterval(()=>{
-        const slides=document.querySelectorAll('.slide');
-        slides[currentSlide].style.display='none';
-        currentSlide=(currentSlide+1)%slides.length;
-        slides[currentSlide].style.display='flex';
-      },5000);
-    });
-
-    // Gallery filtering
-    function filterByCategory(category){
-      const input = document.getElementById("searchInput").value.toLowerCase();
-      const items = document.querySelectorAll(".gallery-item");
-      items.forEach(item=>{
-        const title = item.querySelector("h3")?.innerText.toLowerCase() || "";
-        const desc = item.querySelector("p")?.innerText.toLowerCase() || "";
-        const matchesSearch = title.includes(input) || desc.includes(input);
-        const matchesCategory = category==="all" || item.dataset.category===category;
-        item.style.display = (matchesSearch && matchesCategory) ? "block" : "none";
-      });
-    }
-    function filterGallery(){ 
-      const activeCategory = document.querySelector(".category-button.active")?.dataset.category || "all"; 
-      filterByCategory(activeCategory); 
-    }
-  </script>
-
-  <!-- Google Translate element -->
-  <div id="google_translate_element" style="display:none;"></div>
-  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
-
 </body>
 </html>
