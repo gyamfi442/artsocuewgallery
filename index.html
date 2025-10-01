@@ -10,19 +10,36 @@
     .fade { animation: fadeIn 0.5s ease-in-out; }
     @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     .stroke-white { -webkit-text-stroke: 0.5px white; text-shadow: 0 0 1px white; }
-    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 50; }
+    .modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); display: flex; align-items: center; justify-content: center; z-index: 1000; }
     .modal img { max-width: 90%; max-height: 80vh; border-radius: 10px; box-shadow: 0 0 15px white; }
     .category-button { cursor: pointer; padding: 8px 16px; background-color: #2563eb; color: white; border-radius: 5px; margin: 4px; }
     .category-button:hover { background-color: #1e40af; }
 
-    /* language switcher style (fixed top-right) */
-    .lang-switcher { position: fixed; top: 10px; right: 12px; z-index: 60; display: inline-flex; align-items: center; gap: 6px; }
-    /* make the Google widget less intrusive */
-    .goog-te-gadget-simple { background-color: transparent !important; border: none !important; padding: 0 !important; }
-    .goog-te-gadget .goog-te-combo { margin-left: 6px; border-radius: 4px; }
+    /* Navbar language dropdown styling */
+    .lang-dropdown { position: relative; display: inline-block; }
+    .lang-button {
+      display:flex; align-items:center; gap:8px;
+      background:transparent; border:none; color:white; cursor:pointer;
+      font-weight:600; padding:6px 10px; border-radius:6px;
+    }
+    .lang-menu {
+      display:none; position:absolute; top:110%; left:0; background:white; color:#111;
+      min-width:160px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border-radius:6px; overflow:hidden; z-index:1100;
+    }
+    .lang-menu a {
+      display:flex; align-items:center; gap:8px; padding:8px 12px; text-decoration:none; color:#111;
+    }
+    .lang-menu a:hover { background:#f1f5f9; }
+
+    /* hide google translate top bar & iframe banner for cleaner UI */
+    .goog-te-banner-frame.skiptranslate { display: none !important; }
+    body { top: 0 !important; }
+    .goog-te-gadget, .goog-te-gadget-icon { display: none !important; } /* hide default gadget */
+    /* small tweak to ensure the combobox exists and isn't visually intrusive if it appears */
+    .goog-te-combo { border-radius:4px; padding:4px; }
   </style>
 
-  <!-- Google Translate widget (auto-translate). includedLanguages includes 'ak' (Akan/Twi) as requested) -->
+  <!-- Google Translate widget init -->
   <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({
@@ -30,6 +47,56 @@
         includedLanguages: 'en,fr,es,ak',
         layout: google.translate.TranslateElement.InlineLayout.SIMPLE
       }, 'google_translate_element');
+    }
+
+    // helper to attempt instant translation by changing the widget's combo value
+    function translateInstant(targetLang) {
+      // targetLang values: 'en', 'fr', 'es', 'ak' (ak approximates Twi/Akan)
+      // try to find the combo inserted by Google and change it
+      const tryCombo = () => {
+        const combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.value = targetLang;
+          combo.dispatchEvent(new Event('change'));
+          return true;
+        }
+        return false;
+      };
+
+      // first attempt: try immediately
+      if (tryCombo()) return;
+
+      // if not present yet, wait a bit (google script loads async)
+      let tries = 0;
+      const t = setInterval(() => {
+        tries++;
+        if (tryCombo()) {
+          clearInterval(t);
+        } else if (tries > 30) { // fallback after ~3s
+          clearInterval(t);
+          // fallback: set cookie and reload (ensures translation even if instant method fails)
+          try {
+            document.cookie = "googtrans=/en/" + targetLang + ";path=/";
+          } catch(e){}
+          window.location.reload();
+        }
+      }, 100);
+    }
+
+    // ensure top Google banner removed if Google injects it later
+    function removeGoogleTopBar() {
+      const interval = setInterval(() => {
+        const banner = document.querySelector('.goog-te-banner-frame');
+        if (banner) {
+          try { banner.style.display = 'none'; } catch(e){}
+          clearInterval(interval);
+        }
+      }, 300);
+    }
+
+    // run remove poll after translate script loads
+    function onTranslateScriptReady() {
+      removeGoogleTopBar();
     }
   </script>
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
@@ -99,6 +166,11 @@
       });
     }
 
+    // ensure the translate top bar is removed even after load
+    window.addEventListener('load', () => {
+      removeGoogleTopBar();
+    });
+
     window.onload = function() { showSection('about'); }
   </script>
 </head>
@@ -109,16 +181,44 @@
         <img src="2.jfif" alt="Artsoc Logo" class="h-10 w-10 rounded-full">
         <h1 class="text-2xl font-bold">ARTSOC GALLERY</h1>
       </div>
-      <ul class="flex space-x-4 items-center">
-        <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
-        <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
-        <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
-      </ul>
+
+      <div class="flex items-center">
+        <!-- Languages dropdown inserted BEFORE About -->
+        <div class="lang-dropdown" style="margin-right:10px;">
+          <button class="lang-button" onclick="document.querySelector('.lang-menu').style.display = (document.querySelector('.lang-menu').style.display === 'block' ? 'none' : 'block')">
+            <span>Languages</span>
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:16px;height:16px;color:white">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+          <div class="lang-menu" aria-label="Language selector">
+            <a href="#" onclick="translateInstant('en'); document.querySelector('.lang-menu').style.display='none'; return false;">
+              <span style="font-size:18px;">🇬🇧</span> English
+            </a>
+            <a href="#" onclick="translateInstant('fr'); document.querySelector('.lang-menu').style.display='none'; return false;">
+              <span style="font-size:18px;">🇫🇷</span> Français
+            </a>
+            <a href="#" onclick="translateInstant('ak'); document.querySelector('.lang-menu').style.display='none'; return false;">
+              <span style="font-size:18px;">🇬🇭</span> Twi
+            </a>
+            <a href="#" onclick="translateInstant('es'); document.querySelector('.lang-menu').style.display='none'; return false;">
+              <span style="font-size:18px;">🇪🇸</span> Español
+            </a>
+          </div>
+        </div>
+
+        <!-- Navigation links -->
+        <ul class="flex space-x-4 items-center">
+          <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
+          <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
+          <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
+        </ul>
+      </div>
     </div>
   </nav>
 
-  <!-- language widget (fixed top-right) -->
-  <div id="google_translate_element" class="lang-switcher" aria-hidden="false"></div>
+  <!-- hidden google translate element (kept to make combo accessible to our script) -->
+  <div id="google_translate_element" style="display:none;"></div>
 
   <!-- About Section -->
   <section id="about" class="p-8 max-w-5xl mx-auto mt-10 bg-cover bg-center fade" style="background-image: url('1.JPG');">
