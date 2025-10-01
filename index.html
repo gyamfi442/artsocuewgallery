@@ -15,7 +15,7 @@
     .category-button { cursor: pointer; padding: 8px 16px; background-color: #2563eb; color: white; border-radius: 5px; margin: 4px; }
     .category-button:hover { background-color: #1e40af; }
 
-    /* Navbar language dropdown styling */
+    /* Navbar language dropdown styling (far right) */
     .lang-dropdown { position: relative; display: inline-block; }
     .lang-button {
       display:flex; align-items:center; gap:8px;
@@ -23,23 +23,22 @@
       font-weight:600; padding:6px 10px; border-radius:6px;
     }
     .lang-menu {
-      display:none; position:absolute; top:110%; left:0; background:white; color:#111;
-      min-width:160px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border-radius:6px; overflow:hidden; z-index:1100;
+      display:none; position:absolute; top:110%; right:0; background:white; color:#111;
+      min-width:180px; box-shadow:0 4px 12px rgba(0,0,0,0.15); border-radius:6px; overflow:hidden; z-index:1100;
     }
     .lang-menu a {
       display:flex; align-items:center; gap:8px; padding:8px 12px; text-decoration:none; color:#111;
     }
     .lang-menu a:hover { background:#f1f5f9; }
 
-    /* hide google translate top bar & iframe banner for cleaner UI */
+    /* hide google translate top bar & default gadget */
     .goog-te-banner-frame.skiptranslate { display: none !important; }
     body { top: 0 !important; }
-    .goog-te-gadget, .goog-te-gadget-icon { display: none !important; } /* hide default gadget */
-    /* small tweak to ensure the combobox exists and isn't visually intrusive if it appears */
+    .goog-te-gadget, .goog-te-gadget-icon { display: none !important; }
     .goog-te-combo { border-radius:4px; padding:4px; }
   </style>
 
-  <!-- Google Translate widget init -->
+  <!-- Google Translate init -->
   <script type="text/javascript">
     function googleTranslateElementInit() {
       new google.translate.TranslateElement({
@@ -48,11 +47,13 @@
         layout: google.translate.TranslateElement.InlineLayout.SIMPLE
       }, 'google_translate_element');
     }
+  </script>
+  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
-    // helper to attempt instant translation by changing the widget's combo value
+  <script>
+    // Try to set the google widget combo to instantly change language.
     function translateInstant(targetLang) {
-      // targetLang values: 'en', 'fr', 'es', 'ak' (ak approximates Twi/Akan)
-      // try to find the combo inserted by Google and change it
+      // targetLang: 'en', 'fr', 'es', 'ak' (ak ~ Akan/Twi)
       const tryCombo = () => {
         const combo = document.querySelector('.goog-te-combo');
         if (combo) {
@@ -63,27 +64,26 @@
         return false;
       };
 
-      // first attempt: try immediately
       if (tryCombo()) return;
 
-      // if not present yet, wait a bit (google script loads async)
+      // Wait for widget to load
       let tries = 0;
       const t = setInterval(() => {
         tries++;
         if (tryCombo()) {
           clearInterval(t);
-        } else if (tries > 30) { // fallback after ~3s
+        } else if (tries > 30) { // ~3s fallback
           clearInterval(t);
-          // fallback: set cookie and reload (ensures translation even if instant method fails)
+          // fallback: set cookie and reload to apply translation
           try {
             document.cookie = "googtrans=/en/" + targetLang + ";path=/";
-          } catch(e){}
+          } catch(e) {}
           window.location.reload();
         }
       }, 100);
     }
 
-    // ensure top Google banner removed if Google injects it later
+    // attempt to hide Google top bar if injected later
     function removeGoogleTopBar() {
       const interval = setInterval(() => {
         const banner = document.querySelector('.goog-te-banner-frame');
@@ -94,14 +94,22 @@
       }, 300);
     }
 
-    // run remove poll after translate script loads
-    function onTranslateScriptReady() {
-      removeGoogleTopBar();
+    // UI helpers
+    function toggleLangMenu() {
+      const menu = document.querySelector('.lang-menu');
+      menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
     }
-  </script>
-  <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+    // close lang menu on outside click
+    window.addEventListener('click', (e) => {
+      const dropdown = document.querySelector('.lang-dropdown');
+      if (!dropdown) return;
+      if (!dropdown.contains(e.target)) {
+        const menu = document.querySelector('.lang-menu');
+        if (menu) menu.style.display = 'none';
+      }
+    });
 
-  <script>
+    // Gallery/site functions (unchanged)
     function showSection(id) {
       const sections = ['about', 'gallery', 'contact'];
       sections.forEach(section => {
@@ -145,8 +153,8 @@
       const input = document.getElementById("searchInput").value.toLowerCase();
       const items = document.querySelectorAll(".gallery-item");
       items.forEach(item => {
-        const title = item.querySelector("h3").innerText.toLowerCase();
-        const desc = item.querySelector("p").innerText.toLowerCase();
+        const title = (item.querySelector("h3") ? item.querySelector("h3").innerText.toLowerCase() : "");
+        const desc = (item.querySelector("p") ? item.querySelector("p").innerText.toLowerCase() : "");
         if (title.includes(input) || desc.includes(input)) {
           item.style.display = "block";
         } else {
@@ -166,12 +174,10 @@
       });
     }
 
-    // ensure the translate top bar is removed even after load
     window.addEventListener('load', () => {
       removeGoogleTopBar();
+      showSection('about');
     });
-
-    window.onload = function() { showSection('about'); }
   </script>
 </head>
 <body class="bg-gray-100">
@@ -183,11 +189,18 @@
       </div>
 
       <div class="flex items-center">
-        <!-- Languages dropdown inserted BEFORE About -->
-        <div class="lang-dropdown" style="margin-right:10px;">
-          <button class="lang-button" onclick="document.querySelector('.lang-menu').style.display = (document.querySelector('.lang-menu').style.display === 'block' ? 'none' : 'block')">
+        <!-- Navigation links -->
+        <ul class="flex space-x-4 items-center mr-4">
+          <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
+          <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
+          <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
+        </ul>
+
+        <!-- Languages dropdown (FAR RIGHT) -->
+        <div class="lang-dropdown">
+          <button class="lang-button" onclick="toggleLangMenu()">
             <span>Languages</span>
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:16px;height:16px;color:white">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" style="width:14px;height:14px;color:white">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
             </svg>
           </button>
@@ -199,25 +212,18 @@
               <span style="font-size:18px;">🇫🇷</span> Français
             </a>
             <a href="#" onclick="translateInstant('ak'); document.querySelector('.lang-menu').style.display='none'; return false;">
-              <span style="font-size:18px;">🇬🇭</span> Twi
+              <span style="font-size:18px;">🇬🇭</span> Akan
             </a>
             <a href="#" onclick="translateInstant('es'); document.querySelector('.lang-menu').style.display='none'; return false;">
               <span style="font-size:18px;">🇪🇸</span> Español
             </a>
           </div>
         </div>
-
-        <!-- Navigation links -->
-        <ul class="flex space-x-4 items-center">
-          <li><button onclick="showSection('about')" class="hover:underline">About</button></li>
-          <li><button onclick="showSection('gallery')" class="hover:underline">Gallery</button></li>
-          <li><button onclick="showSection('contact')" class="hover:underline">Contact</button></li>
-        </ul>
       </div>
     </div>
   </nav>
 
-  <!-- hidden google translate element (kept to make combo accessible to our script) -->
+  <!-- hidden google translate element (kept to allow script to access the combo) -->
   <div id="google_translate_element" style="display:none;"></div>
 
   <!-- About Section -->
@@ -272,30 +278,30 @@
       <!-- sculpture -->
       <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
         <img src="21.jpg" 
-             alt=" DUALITY OF EXISTENCE " 
+             alt="DUALITY OF EXISTENCE" 
              onclick="enlargeImage('21.jpg', 'Artist:<br>Materials: clay, paint<br>Technique: modeling<br>This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull')" 
              class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-        <h3 class="text-xl font-bold mb-2"> DUALITY OF EXISTENCE </h3>
+        <h3 class="text-xl font-bold mb-2">DUALITY OF EXISTENCE</h3>
         <p class="text-sm text-gray-600">
           Artist:<br>
-          Materials:clay paint <br>
+          Materials: clay, paint<br>
           Technique: modeling<br>
-        This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull
+          This sculpture presents a thought-provoking representation of the duality of human existence, with one side of the bust depicting a realistic human face and the other side revealing a skull.
         </p>
       </div>
 
       <!-- sculpture -->
       <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
         <img src="20.jpg" 
-             alt="guitar sculpture with mask" 
-             onclick="enlargeImage('20.jpg', 'Artist:<br>Materials: guitar body(wood), clay, wood,paint<br>Technique: modeling<br>This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art')" 
+             alt="GUITAR SCULPTURE WITH MASK" 
+             onclick="enlargeImage('20.jpg', 'Artist:<br>Materials: guitar body (wood), clay, wood, paint<br>Technique: modeling<br>This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art')" 
              class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-        <h3 class="text-xl font-bold mb-2"> GUITAR SCULPTURE WITH MASK </h3>
+        <h3 class="text-xl font-bold mb-2">GUITAR SCULPTURE WITH MASK</h3>
         <p class="text-sm text-gray-600">
           Artist:<br>
-          Materials: guitar body(wood), clay, wood, paint <br>
+          Materials: guitar body (wood), clay, wood, paint<br>
           Technique: modeling<br>
-          This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art
+          This sculpture combines a modified guitar with a clay mask, creating a unique and intriguing piece of art.
         </p>
       </div>
 
@@ -320,8 +326,8 @@
 
       <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
         <img src="19.jpg" 
-             alt="metal bull" 
-             onclick="enlargeImage('19.jpg', 'Artist:<br>Materials: unwanted car parts (metal)<br>Technique: weaving<br>This art piece serves as a sculpture piece and can also be used to decorate both interior and exterior spaces.')" 
+             alt="Metal Bull" 
+             onclick="enlargeImage('19.jpg', 'Artist:<br>Materials: unwanted car parts (metal)<br>Technique: assemblage<br>This art piece serves as a sculpture piece and can also be used to decorate both interior and exterior spaces.')" 
              class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
         <h3 class="text-xl font-bold mb-2">METAL BULL</h3>
         <p class="text-sm text-gray-600">
@@ -333,17 +339,17 @@
       </div>
 
       <!-- Paintings -->
-      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="paintings">
+      <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="painting">
         <img src="22.jpg" 
-             alt=" TWIN TIGERS " 
-             onclick="enlargeImage('22.jpg', 'Artist:<br>Materials: straw on canvas<br>Technique: mosaic<br>this rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength ')" 
+             alt="TWIN TIGERS" 
+             onclick="enlargeImage('22.jpg', 'Artist:<br>Materials: straw on canvas<br>Technique: mosaic<br>This rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength.')" 
              class="w-full h-48 object-cover rounded mb-4 cursor-pointer">
-        <h3 class="text-xl font-bold mb-2"> TWIN TIGERS</h3>
+        <h3 class="text-xl font-bold mb-2">TWIN TIGERS</h3>
         <p class="text-sm text-gray-600">
           Artist:<br>
           Materials: straw on canvas<br>
           Technique: mosaic<br>
-        this rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength
+          This rectangular artwork portrays two tigers resting closely together symbolizing companionship and strength.
         </p>
       </div>
 
