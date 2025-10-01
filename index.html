@@ -25,6 +25,24 @@
     .lang-menu a { display:flex; align-items:center; gap:8px; padding:8px 12px; text-decoration:none; color:#111; }
     .lang-menu a:hover { background:#f1f5f9; }
 
+    /* Category buttons */
+    .category-button {
+      background: transparent;
+      border: 2px solid #1D4ED8;
+      color: #1D4ED8;
+      font-weight: bold;
+      padding: 6px 12px;
+      margin: 2px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .category-button:hover {
+      background: #1D4ED8;
+      color: white;
+      transform: translateY(-2px);
+    }
+
     /* hide Google top bar & gadget */
     .goog-te-banner-frame.skiptranslate { display: none !important; }
     body { top: 0 !important; }
@@ -87,36 +105,25 @@
   <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
 
   <script>
-    // Language switcher
-    function translateInstant(lang) {
-      const applyLanguage = () => {
-        const combo = document.querySelector('.goog-te-combo');
-        if (!combo) return false;
-        combo.value = lang;
-        combo.dispatchEvent(new Event('change'));
-        return true;
+    function translateInstant(targetLang) {
+      const tryCombo = () => { 
+        const combo = document.querySelector('.goog-te-combo'); 
+        if(combo){ combo.value=targetLang; combo.dispatchEvent(new Event('change')); return true;} 
+        return false; 
       };
-      if (applyLanguage()) return;
-      let tries = 0;
-      const interval = setInterval(() => {
-        tries++;
-        if (applyLanguage() || tries > 30) {
-          clearInterval(interval);
-          try {
-            document.cookie = "googtrans=/en/" + lang + ";path=/";
-            window.location.reload();
-          } catch (e) { console.log(e); }
-        }
-      }, 200);
+      if(tryCombo()) return;
+      let tries=0;
+      const t=setInterval(()=>{
+        tries++; 
+        if(tryCombo()){clearInterval(t);} 
+        else if(tries>30){clearInterval(t); try{document.cookie="googtrans=/en/"+targetLang+";path=/";}catch(e){} window.location.reload();}
+      },100);
     }
 
-    function removeGoogleTopBar() {
+    function removeGoogleTopBar() { 
       const interval=setInterval(()=>{ 
         const banner=document.querySelector('.goog-te-banner-frame'); 
-        if(banner){ 
-          try{banner.style.display='none';}catch(e){} 
-          clearInterval(interval); 
-        } 
+        if(banner){ try{banner.style.display='none';}catch(e){} clearInterval(interval); } 
       },300); 
     }
 
@@ -124,7 +131,6 @@
       const menu=document.querySelector('.lang-menu'); 
       menu.style.display=(menu.style.display==='block')?'none':'block'; 
     }
-
     window.addEventListener('click',(e)=>{ 
       const dropdown=document.querySelector('.lang-dropdown'); 
       if(!dropdown) return; 
@@ -158,7 +164,7 @@
     function filterGallery(){ 
       const input=document.getElementById("searchInput").value.toLowerCase(); 
       const items=document.querySelectorAll(".gallery-item"); 
-      items.forEach(item=>{ 
+      items.forEach(item=>{
         const title=(item.querySelector("h3")?item.querySelector("h3").innerText.toLowerCase():""); 
         const desc=(item.querySelector("p")?item.querySelector("p").innerText.toLowerCase():""); 
         item.style.display=(title.includes(input)||desc.includes(input))?"block":"none";
@@ -187,11 +193,11 @@
       ];
       const container=document.getElementById('slideshow');
       slidesData.forEach((slide,i)=>{ 
-        const div=document.createElement('div'); div.className='slide'; 
-        if(i===0) div.style.display='flex'; 
+        const div=document.createElement('div'); div.className='slide'; if(i===0) div.style.display='flex'; 
         const img=document.createElement('img'); img.src=slide.src; img.onclick=()=>enlargeImage(slide.src,slide.title); 
         div.appendChild(img); 
-        const title=document.createElement('div'); title.className='slide-title'; title.innerText=slide.title; div.appendChild(title); 
+        const title=document.createElement('div'); title.className='slide-title'; title.innerText=slide.title; 
+        div.appendChild(title); 
         container.appendChild(div); 
       });
       let currentSlide=0; 
@@ -255,12 +261,16 @@
     </div>
   </section>
 
-   <!-- Gallery Section -->
+  <!-- Gallery Section -->
   <section id="gallery" class="hidden p-8 max-w-6xl mx-auto mt-10 fade">
     <h2 class="text-3xl font-bold text-center text-blue-700 mb-8">Gallery</h2>
+
+    <!-- Search -->
     <div class="text-center mb-6">
       <input type="text" id="searchInput" onkeyup="filterGallery()" placeholder="Search artworks..." class="w-full md:w-1/2 px-4 py-2 border border-gray-300 rounded shadow-sm">
     </div>
+
+    <!-- Categories -->
     <div class="text-center mb-6">
       <button class="category-button" onclick="filterByCategory('all')">All</button>
       <button class="category-button" onclick="filterByCategory('painting')">Paintings</button>
@@ -270,13 +280,17 @@
       <button class="category-button" onclick="filterByCategory('jewelry')">Jewelry</button>
       <button class="category-button" onclick="filterByCategory('ceramics')">Ceramics</button>
     </div>
+
+    <!-- WhatsApp Upload Option -->
     <div class="text-center mb-10">
       <a href="https://wa.me/233559071280?text=Hello%2C%20please%20upload%20my%20artwork%20manually%20for%20ARTSOC%20Gallery" class="text-blue-600 underline">
-         click here to send your artwork via WhatsApp
+        Or click here to send your artwork via WhatsApp
       </a>
     </div>
+
+    <!-- Artworks Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-       <!-- sculpture -->
+        <!-- sculpture -->
       <div class="gallery-item bg-white p-4 rounded shadow hover:shadow-lg transition" data-category="sculpture">
         <img src="21.jpg" 
              alt="DUALITY OF EXISTENCE" 
@@ -420,6 +434,7 @@
         <p class="text-sm text-gray-600">Materials: Acrylic beads, fishing line<br>Technique: Hand-threading</p>
       </div>
     </div>
+ </section>
 
   <!-- Contact Section -->
   <section id="contact" class="hidden bg-white text-gray-800 p-8 rounded-xl shadow-lg max-w-4xl mx-auto mt-10 mb-10 fade">
